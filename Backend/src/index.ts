@@ -1,6 +1,7 @@
 import express from 'express';
 import { connectMongoDb } from './config/mongo';
 import { Schema, model } from 'mongoose';
+import cors from 'cors';
 
 process.loadEnvFile();
 
@@ -20,6 +21,7 @@ const bookSchema = new Schema({
 const Book = model("Book", bookSchema);
 
 const app = express();
+app.use(cors());
 
 
 const getAllBooks = async () => {
