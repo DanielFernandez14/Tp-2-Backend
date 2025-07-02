@@ -88,6 +88,28 @@ app.post("/api/books", async (request, response): Promise<any> => {
         })
     }})
 
+app.delete("/api/books/:id", async (request, response): Promise<any> => { 
+    try {
+        const req = request.params.id
+        const deletedBook = await Book.findByIdAndDelete(req);
+        if (!deletedBook) {
+            return response.status(404).json({
+                success: false,
+                message: "Libro no encontrado"
+            })
+        }
+        response.json({
+            success: true,
+            message: "Libro eliminado correctamente",})
+    } catch (error) {
+        const err = error as Error
+        return response.status(500).json({
+            success: false,
+            message: `Error al eliminar el libro: ${err.message}`
+        })
+    }
+})
+
 app.listen(PORT, () => {
     console.log(`✅ Servidor en escucha en el puerto http://localhost:${PORT}`)
     connectMongoDb()
