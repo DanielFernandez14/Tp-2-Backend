@@ -21,7 +21,7 @@ Instalar dependencias:
 ```bash
 npm install express mongoose cors
 npm install --save-dev typescript ts-node-dev @types/express @types/node
-
+```
 
 Crear un archivo .env en la raíz del proyecto con las siguientes variables: 
 PORT=1234
