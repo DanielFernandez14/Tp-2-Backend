@@ -41,47 +41,49 @@ let idToEdit = null;
     };
 
     const addNewBook = async (e) => {
-        e.preventDefault();
-        isEditing = false;
-        try {
-            const bookData = {
-                title: titleInput.value,
-                author: authorInput.value,
-                publishedYear: Number(publishedYearInput.value),
-                genre: genreInput.value,
-            }
-            if(isEditing === false) {
-                console.log("Agregando libro...");
+    e.preventDefault();
 
-                await fetch("http://localhost:1234/api/books", {
-                method: "POST",
-                body: JSON.stringify(bookData),
-                headers: { "Content-Type": "application/json" }
-            });
-            
-            await fetchingBooks();
+    try {
+    const bookData = {
+        title: titleInput.value,
+        author: authorInput.value,
+        publishedYear: Number(publishedYearInput.value),
+        genre: genreInput.value,
+    };
 
-        } else {
-            const response = await fetch(`http://localhost:1234/api/books/` + idToEdit, {
-            method: "PATCH",
-            body: JSON.stringify(newBook),
-            headers: { "Content-Type": "application/json" }
-        })
+    if (isEditing === false) {
+        console.log("Agregando libro...");
 
-            titleInput.value = "";
-            authorInput.value = "";
-            publishedYearInput.value = "";
-            genreInput.value = "";
-        }
-        isEditing = false;
-        idToEdit = null;
-        fetchingBooks();
+        await fetch("http://localhost:1234/api/books", {
+        method: "POST",
+        body: JSON.stringify(bookData),
+        headers: { "Content-Type": "application/json" }
+        });
 
-        } catch (error) {
-            console.error("Error al agregar libro:", error);
-            alert("Error al agregar libro. Por favor, inténtelo de nuevo.", error);
-        }
+    } else {
+        console.log("Actualizando libro...");
+
+        await fetch(`http://localhost:1234/api/books/${idToEdit}`, {
+        method: "PATCH",
+        body: JSON.stringify(bookData),
+        headers: { "Content-Type": "application/json" }
+        });
     }
+
+    titleInput.value = "";
+    authorInput.value = "";
+    publishedYearInput.value = "";
+    genreInput.value = "";
+
+    isEditing = false;
+    idToEdit = null;
+
+    await fetchingBooks();
+    } catch (error) {
+    console.error("Error:", error);
+    alert("Ocurrió un error. Por favor, inténtelo de nuevo.");
+    }
+};
 
     const updateBook = (id, title, author, publishedYear, genre) => {
         console.log("Actualizando libro...",id, title, author, publishedYear, genre);
