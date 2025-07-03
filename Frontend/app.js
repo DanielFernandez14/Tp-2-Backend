@@ -7,6 +7,7 @@ const publishedYearInput = document.getElementById("year");
 const genreInput = document.getElementById("genre");
 
 let isEditing = false;
+let idToEdit = null;
 
     const fetchingBooks = async () => {
         try {
@@ -25,7 +26,7 @@ let isEditing = false;
             <p><b>Género</b>: ${book.genre}</p>
             <p><b>Año</b>: ${book.publishedYear}</p>
             <p><b>Disponibilidad</b>: ${book.available ? "Disponible" : "No disponible"}</p>
-            <button onclick="updateBook('${book.title}', '${book.author}', ${book.publishedYear}, '${book.genre}')" class="btn-update">Actualizar Libro</button>
+            <button onclick="updateBook('${book._id}','${book.title}', '${book.author}', ${book.publishedYear}, '${book.genre}')" class="btn-update">Actualizar Libro</button>
             <button onclick="deleteBook('${book._id}')" class="btn-delete">Eliminar Libro</button>
 
             `
@@ -43,43 +44,50 @@ let isEditing = false;
         e.preventDefault();
         isEditing = false;
         try {
-            if(isEditing === false) {
-                console.log("Agregando libro...");
-
-            const newBook = {
+            const bookData = {
                 title: titleInput.value,
                 author: authorInput.value,
                 publishedYear: Number(publishedYearInput.value),
                 genre: genreInput.value,
             }
-                
+            if(isEditing === false) {
+                console.log("Agregando libro...");
 
-            const response = await fetch("http://localhost:1234/api/books", {
+                await fetch("http://localhost:1234/api/books", {
                 method: "POST",
-                body: JSON.stringify(newBook),
+                body: JSON.stringify(bookData),
                 headers: { "Content-Type": "application/json" }
             });
             
+            await fetchingBooks();
+
+        } else {
+            const response = await fetch(`http://localhost:1234/api/books/` + idToEdit, {
+            method: "PATCH",
+            body: JSON.stringify(newBook),
+            headers: { "Content-Type": "application/json" }
+        })
+
             titleInput.value = "";
             authorInput.value = "";
             publishedYearInput.value = "";
             genreInput.value = "";
-
-            await fetchingBooks();
-        } else { 
-
-            
         }
+        isEditing = false;
+        idToEdit = null;
+        fetchingBooks();
+
         } catch (error) {
             console.error("Error al agregar libro:", error);
             alert("Error al agregar libro. Por favor, inténtelo de nuevo.", error);
         }
     }
-    
-    const updateBook = (title, author, publishedYear, genre) => {
-        console.log("Actualizando libro...", title, author, publishedYear, genre);
+
+    const updateBook = (id, title, author, publishedYear, genre) => {
+        console.log("Actualizando libro...",id, title, author, publishedYear, genre);
         isEditing = true;
-        btnSubmit.textContent = "Actualizar Libro";
+        idToEdit = id;
+        btnSubmit.textContent = "Editar Libro";
 
         titleInput.value = title;
         authorInput.value = author;
@@ -88,8 +96,6 @@ let isEditing = false;
 
         isEditing = false;
     }
-        
-
 
     const deleteBook = async (id) => {
         try {
@@ -105,29 +111,6 @@ let isEditing = false;
             console.log("Error al eliminar libro:", error);
         }
     }
-
-    const sendQueryUpdate = async (id) => {
-        const updateBook = {
-            title: titleInput.value,
-            author: authorInput.value,
-            publishedYear: Number(publishedYearInput.value),
-            genre: genreInput.value,
-        }
-
-            const response = await fetch(`http://localhost:1234/api/books/` + id, {
-            method: "PATCH",
-            body: JSON.stringify(updateBook),
-            headers: { "Content-Type": "application/json" }
-        })
-            titleInput.value = "";
-            authorInput.value = "";
-            publishedYearInput.value = "";
-            genreInput.value = "";
-
-            fetchingBooks();
-    }
-
-
     form.addEventListener("submit", addNewBook)
 
     fetchingBooks();
