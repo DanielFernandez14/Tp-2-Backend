@@ -1,11 +1,9 @@
-//valida metodo y url
 import { Router } from "express";
-import { Book } from "../models/bookModel";
-import { get } from "mongoose";
-import { createBook, deleteBook, getAllBooks, updateBook } from "../controllers/bookController";
+import { createBook, deleteBook, getAllBooks, getBookById, updateBook } from "../controllers/bookController";
 
 const bookRouter = Router();
 
+bookRouter.get("/:id", getBookById);
 
 bookRouter.get("/", getAllBooks);
 

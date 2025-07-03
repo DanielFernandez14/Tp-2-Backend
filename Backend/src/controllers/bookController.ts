@@ -1,5 +1,31 @@
 import { Book } from "../models/bookModel";
-import { Request, Response } from "express";
+import { request, Request, response, Response } from "express";
+
+const getBookById = async (request: Request, response: Response): Promise<any> => {
+    try {
+    const id = request.params.id;
+    const book = await Book.findById(id);
+    if (!book) {
+        return response.status(404).json({
+        success: false,
+        message: "Libro no encontrado"
+        });
+    }
+    return response.json({
+        success: true,
+        data: book,
+        message: "Libro obtenido correctamente"
+    });
+    } catch (error) {
+    const err = error as Error;
+    return response.status(500).json({
+        success: false,
+        message: `Error al obtener el libro: ${err.message}`
+    });
+    }
+};
+
+export { getBookById };
 
 const getAllBooks = async (request: Request, response: Response): Promise<any> => {
         try {
